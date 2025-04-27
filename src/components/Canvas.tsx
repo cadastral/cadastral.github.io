@@ -17,7 +17,7 @@ const MAPBOX_TOKEN =
   "pk.eyJ1Ijoic2FiaW51IiwiYSI6ImNtOXp4bW93eTBxb2QybHNoM2EwMXJsam0ifQ.-bCis9OqE0RaMMGKcu0TkQ";
 
 export function Canvas() {
-  const initialView = { longitude: 26.11, latitude: 44.44, zoom: 12 };
+  const initialView = { longitude: 26.11, latitude: 44.44, zoom: 11 };
 
   const theme = useAtomValue(themeAtom);
   const scale = useAtomValue(scaleAtom);
