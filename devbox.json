@@ -2,7 +2,9 @@
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.14.0/.schema/devbox.schema.json",
   "packages": [
     "tailwindcss_4@latest",
-    "just@latest"
+    "just@latest",
+    "nodejs@latest",
+    "pnpm@latest"
   ],
   "shell": {
     "init_hook": [
