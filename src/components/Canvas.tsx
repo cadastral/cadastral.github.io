@@ -1,6 +1,12 @@
 import { useState } from "react";
-import { useAtomValue, useSetAtom } from "jotai";
-import { Map, Layer, Source } from "react-map-gl/mapbox";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import {
+  Map,
+  Layer,
+  Source,
+  GeolocateControl,
+  ScaleControl,
+} from "react-map-gl/mapbox";
 import type { LayerProps, MapMouseEvent } from "react-map-gl/mapbox";
 import type { Feature, GeoJSON, Polygon } from "geojson";
 
@@ -22,20 +28,40 @@ export function Canvas() {
 
   const theme = useAtomValue(themeAtom);
   const scale = useAtomValue(scaleAtom);
-  const setTileAtom = useSetAtom(tileAtom);
+  const [tile, setTile] = useAtom(tileAtom);
   const setSheetOpenAtom = useSetAtom(sheetOpenAtom);
 
-  const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
-
   const [coords, setCoords] = useState({ lng: 26.11, lat: 44.44 });
+
+  const is500 = scale === "500";
+  const isLight = theme === "light";
 
   const handleMapClick = (event: MapMouseEvent) => {
     const feature = event.features?.[0];
     if (feature != undefined) {
-      setTileAtom(feature as Feature<Polygon>);
-      setSelectedFeature(feature.properties?.name);
+      setTile(feature as Feature<Polygon>);
+      // setSelectedFeature(feature.properties?.name);
       setSheetOpenAtom(true);
     }
+  };
+
+  const [minZ, maxZ] = is500 ? [14, 18] : [12, 16];
+
+  const layerLabelsCadastru: LayerProps = {
+    id: "cadastru-labels",
+    type: "symbol",
+    layout: {
+      "text-field": ["get", "name"],
+      "text-size": ["interpolate", ["linear"], ["zoom"], minZ, 12, maxZ, 48],
+      "text-anchor": "center",
+      "symbol-placement": "point",
+      "symbol-avoid-edges": true,
+      "text-allow-overlap": false,
+    },
+    paint: { "text-color": isLight ? "#222" : "#ddd" },
+    filter: ["!=", ["get", "gasit"], "nu"],
+    minzoom: minZ,
+    maxzoom: maxZ,
   };
 
   const layerConfigCadastru: LayerProps = {
@@ -44,23 +70,21 @@ export function Canvas() {
     paint: {
       "fill-color": [
         "case",
-        ["==", ["get", "name"], selectedFeature],
+        ["==", ["get", "name"], tile ? tile.properties?.name : null],
         "#50f", // violet selected
         "#088", // teal unselected
       ],
       "fill-opacity": 0.3,
-      "fill-outline-color": "#000",
+      "fill-outline-color": isLight ? "#000" : "#fff",
     },
     filter: ["!=", ["get", "gasit"], "nu"],
   };
 
-  const background =
-    theme == "light"
-      ? "mapbox://styles/mapbox/light-v11"
-      : "mapbox://styles/mapbox/dark-v11";
+  const background = isLight
+    ? "mapbox://styles/mapbox/light-v11"
+    : "mapbox://styles/mapbox/dark-v11";
 
-  const geojson =
-    scale === "500" ? (geo_500 as GeoJSON) : (geo_2000 as GeoJSON);
+  const geojson = is500 ? (geo_500 as GeoJSON) : (geo_2000 as GeoJSON);
 
   return (
     <>
@@ -83,7 +107,11 @@ export function Canvas() {
         interactiveLayerIds={["cadastru-layer"]}
         onClick={handleMapClick}
       >
+        <GeolocateControl />
+        <ScaleControl />
+
         <Source id="cadastru" type="geojson" data={geojson}>
+          <Layer {...layerLabelsCadastru} />
           <Layer {...layerConfigCadastru} />
         </Source>
       </Map>

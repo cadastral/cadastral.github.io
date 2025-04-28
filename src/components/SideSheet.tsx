@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useAtom, useAtomValue } from "jotai";
-import { Check, Clipboard, PanelLeft } from "lucide-react";
-import { Feature, Polygon } from "geojson";
+import { Check, Clipboard, ExternalLink, PanelLeft } from "lucide-react";
 import { centroid } from "@turf/centroid";
 import { polygon } from "@turf/helpers";
 
@@ -15,15 +14,24 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { scaleAtom, sheetOpenAtom, tileAtom } from "@/atoms";
+import { cn } from "@/lib/utils";
+
+import carou from "@/assets/carou.png";
 
 export function SideSheet() {
-  const tile: Feature<Polygon> | undefined = useAtomValue(tileAtom);
   const [open, setOpen] = useAtom(sheetOpenAtom);
+  const tile = useAtomValue(tileAtom);
   const scale = useAtomValue(scaleAtom);
 
   const [copied, setCopied] = useState(false);
 
+  const is500 = scale === "500";
+
   const center = tile ? centroid(polygon(tile.geometry.coordinates)) : null;
+  const [lng, lat] = center
+    ? [center.geometry.coordinates[1], center.geometry.coordinates[0]]
+    : [null, null];
+  const height = is500 ? "250" : "1000";
 
   const handleCopy = async () => {
     try {
@@ -49,11 +57,32 @@ export function SideSheet() {
           </SheetTitle>
           <SheetDescription className="hidden"></SheetDescription>
         </SheetHeader>
-        <div className="flex flex-col gap-4 px-4">
+        <div
+          className={cn(
+            "flex flex-col gap-4 px-4 overflow-y-scroll",
+            "scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted-foreground scrollbar-track-background",
+          )}
+        >
           {tile ? (
             <>
+              <div className="flex gap-2">
+                <a href={tile?.properties?.link} target="_blank">
+                  <Button>Download</Button>
+                </a>
+                {center ? (
+                  <a
+                    href={`https://www.google.com/maps/@${lng},${lat},${height}m`}
+                    target="_blank"
+                  >
+                    <Button variant="secondary">
+                      Google Maps
+                      <ExternalLink />
+                    </Button>
+                  </a>
+                ) : null}
+              </div>
               <div>AutoCAD command to draw tile perimeter.</div>
-              <div className="relative bg-muted rounded-md p-4 overflow-auto scrollbar-hide">
+              <div className="relative bg-muted rounded-md p-4">
                 <Button
                   onClick={handleCopy}
                   variant="ghost"
@@ -72,20 +101,21 @@ export function SideSheet() {
                   </code>
                 </pre>
               </div>
-              <div className="flex">
-                <a href={tile?.properties?.link} target="_blank">
-                  <Button>Carou</Button>
-                </a>
-                {center ? (
-                  <Button variant="link">
-                    <a
-                      href={`https://www.google.com/maps/@${center.geometry.coordinates[1]},${center.geometry.coordinates[0]},${scale === "2000" ? "1000" : "250"}m`}
-                      target="_blank"
-                    >
-                      Google Maps
-                    </a>
-                  </Button>
-                ) : null}
+              <div>
+                For quick positioning, copy the script above and paste it into
+                the AutoCAD command line. The polygon will be drawn in Stereo 70
+                coordinates. The points' coordinates correspondence is
+                illustrated below.
+              </div>
+              <div className="relative bg-muted rounded-md p-4">
+                <pre className="text-sm text-muted-foreground">
+                  <code className="whitespace-pre-line">
+                    PLINE y0, x0, y1, x1, y2, x2, y3, x3 CLOSE
+                  </code>
+                </pre>
+              </div>
+              <div className="flex justify-center w-full">
+                <img src={carou} className="dark:invert" />
               </div>
             </>
           ) : (
