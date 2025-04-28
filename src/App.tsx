@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme/provider";
 import { Button } from "@/components/ui/button";
 import { WelcomeDialog } from "@/components/WelcomeDialog";
 import { ModeToggle } from "@/components/theme/mode-toggle";
+import { SideSheet } from "@/components/SideSheet";
 import { Canvas } from "@/components/Canvas";
 import { scaleAtom } from "@/atoms";
 
@@ -14,9 +15,12 @@ function App() {
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <div className="flex flex-col h-full">
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b px-4">
-          <Button onClick={() => setScale(scale === "500" ? "2000" : "500")}>
-            {scale}
-          </Button>
+          <div className="flex gap-2">
+            <SideSheet />
+            <Button onClick={() => setScale(scale === "500" ? "2000" : "500")}>
+              {scale}
+            </Button>
+          </div>
           <div className="flex gap-2">
             <ModeToggle />
             <WelcomeDialog />

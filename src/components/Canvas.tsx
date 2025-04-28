@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import Map, { Layer, Source } from "react-map-gl/mapbox";
-import type { LayerProps } from "react-map-gl/mapbox";
+import type { LayerProps, MapMouseEvent } from "react-map-gl/mapbox";
 import type { GeoJSON } from "geojson";
 
 import { themeAtom } from "@/components/theme/constants";
 import { Card } from "@/components/ui/card";
-import { scaleAtom } from "@/atoms";
+import { scaleAtom, sheetOpenAtom, tileAtom } from "@/atoms";
 
+// TODO: this need to be in /public, and default needs to be 2000 (smaller)
 import geo_500 from "@/assets/500.json";
 import geo_2000 from "@/assets/2000.json";
 
@@ -21,14 +22,32 @@ export function Canvas() {
 
   const theme = useAtomValue(themeAtom);
   const scale = useAtomValue(scaleAtom);
+  const setTileAtom = useSetAtom(tileAtom);
+  const setSheetOpenAtom = useSetAtom(sheetOpenAtom);
+
+  const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
 
   const [coords, setCoords] = useState({ lng: 26.11, lat: 44.44 });
 
-  const layerStyle: LayerProps = {
+  const handleMapClick = (event: MapMouseEvent) => {
+    const feature = event.features?.[0];
+    if (feature != undefined) {
+      setTileAtom(feature);
+      setSelectedFeature(feature.properties?.name);
+      setSheetOpenAtom(true);
+    }
+  };
+
+  const layerConfigCadastru: LayerProps = {
     id: "cadastru-layer",
     type: "fill",
     paint: {
-      "fill-color": "#088",
+      "fill-color": [
+        "case",
+        ["==", ["get", "name"], selectedFeature],
+        "#50f", // violet selected
+        "#088", // teal unselected
+      ],
       "fill-opacity": 0.3,
       "fill-outline-color": "#000",
     },
@@ -60,9 +79,11 @@ export function Canvas() {
             lng: Number(e.lngLat.lng.toFixed(5)),
           });
         }}
+        interactiveLayerIds={["cadastru-layer"]}
+        onClick={handleMapClick}
       >
         <Source id="cadastru" type="geojson" data={geojson}>
-          <Layer {...layerStyle} />
+          <Layer {...layerConfigCadastru} />
         </Source>
       </Map>
       <Card className="absolute bottom-4 right-4 px-4 py-2 rounded-full text-sm font-mono">

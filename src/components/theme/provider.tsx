@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { useAtom } from "jotai";
+import { useSetAtom } from "jotai";
 
 import { themeAtom } from "./constants";
 
@@ -29,7 +29,7 @@ export function ThemeProvider({
   storageKey = "vite-ui-theme",
   ...props
 }: ThemeProviderProps) {
-  const [thm, setThm] = useAtom(themeAtom);
+  const setThm = useSetAtom(themeAtom);
 
   const [theme, setTheme] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
