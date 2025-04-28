@@ -15,7 +15,8 @@ import geo_2000 from "@/assets/2000.json";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 const MAPBOX_TOKEN =
-  "pk.eyJ1Ijoic2FiaW51IiwiYSI6ImNtOXp4bW93eTBxb2QybHNoM2EwMXJsam0ifQ.-bCis9OqE0RaMMGKcu0TkQ";
+  // "pk.eyJ1Ijoic2FiaW51IiwiYSI6ImNtOXp4bW93eTBxb2QybHNoM2EwMXJsam0ifQ.-bCis9OqE0RaMMGKcu0TkQ";
+  "pk.eyJ1Ijoic2FiaW51IiwiYSI6IkFHLWJ5czQifQ.QO1ekm2nL-KLJPUe6AiGwA";
 
 export function Canvas() {
   const initialView = { longitude: 26.11, latitude: 44.44, zoom: 11 };
