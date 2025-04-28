@@ -1,4 +1,4 @@
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { MapProvider } from "react-map-gl/mapbox";
 
 import { ThemeProvider } from "@/components/theme/provider";
@@ -8,10 +8,11 @@ import { ModeToggle } from "@/components/theme/mode-toggle";
 import { SideSheet } from "@/components/SideSheet";
 import { Canvas } from "@/components/Canvas";
 import { GoHome } from "@/components/GoHome";
-import { scaleAtom } from "@/atoms";
+import { scaleAtom, tileAtom } from "@/atoms";
 
 function App() {
   const [scale, setScale] = useAtom(scaleAtom);
+  const setTile = useSetAtom(tileAtom);
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
@@ -23,7 +24,10 @@ function App() {
               <GoHome />
               <Button
                 className="w-16"
-                onClick={() => setScale(scale === "500" ? "2000" : "500")}
+                onClick={() => {
+                  setScale(scale === "500" ? "2000" : "500");
+                  setTile(null);
+                }}
               >
                 {scale}
               </Button>
