@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
-import Map, { Layer, Source } from "react-map-gl/mapbox";
+import { Map, Layer, Source } from "react-map-gl/mapbox";
 import type { LayerProps, MapMouseEvent } from "react-map-gl/mapbox";
-import type { GeoJSON } from "geojson";
+import type { Feature, GeoJSON, Polygon } from "geojson";
 
 import { themeAtom } from "@/components/theme/constants";
 import { Card } from "@/components/ui/card";
@@ -32,7 +32,7 @@ export function Canvas() {
   const handleMapClick = (event: MapMouseEvent) => {
     const feature = event.features?.[0];
     if (feature != undefined) {
-      setTileAtom(feature);
+      setTileAtom(feature as Feature<Polygon>);
       setSelectedFeature(feature.properties?.name);
       setSheetOpenAtom(true);
     }
@@ -65,13 +65,14 @@ export function Canvas() {
   return (
     <>
       <Map
+        id="cadastralMap"
         mapboxAccessToken={MAPBOX_TOKEN}
         initialViewState={initialView}
         style={{ width: "100%", height: "100%" }}
         mapStyle={background}
         maxBounds={[
           [19.6, 43.3], // Southwest coordinates
-          [31.0, 48.5], // Northeast coordinates
+          [31.0, 48.6], // Northeast coordinates
         ]}
         onMouseMove={(e) => {
           setCoords({

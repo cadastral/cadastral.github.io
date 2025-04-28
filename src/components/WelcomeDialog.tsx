@@ -24,43 +24,28 @@ export function WelcomeDialog() {
           <Info />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
+      <DialogContent className="max-w-sm">
+        <DialogHeader className="text-left">
           <DialogTitle>Salut, bine ai venit la /cadastral/</DialogTitle>
           <DialogDescription>
             Un serviciu ce organizează carourile cadastrale ale Bucureștiului
             din 1990.
           </DialogDescription>
         </DialogHeader>
-        <div className="flex gap-2 w-full">
+        <div className="flex gap-2 flex-w">
           <Button type="button" variant="secondary">
             <a target="_blank" href="https://goo.gl/6880E9">
               Documentatie
             </a>
           </Button>
           <Button type="button" variant="secondary">
-            <a target="_blank" href="https://goo.gl/6PtRpK">
-              Feed-back
-            </a>
-          </Button>
-          <Button type="button" variant="secondary">
-            <a target="_blank" href="https://goo.gl/CgiLND">
-              Discord (FIX)
-            </a>
-          </Button>
-        </div>
-        <div>
-          Plus începutul unei harți cu date despre proiecte din România.
-        </div>
-        <div className="flex gap-2 w-full">
-          <Button type="button" variant="secondary">
-            <a target="_blank" href="map_base.html">
-              Harta (FIX)
+            <a target="_blank" href="https://discord.gg/pwMPfshy">
+              Discord
             </a>
           </Button>
           <Button type="button" variant="secondary">
             <a target="_blank" href="https://fb.me/definit.buc">
-              Facebook Page
+              Facebook
             </a>
           </Button>
         </div>
